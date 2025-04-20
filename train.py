@@ -15,11 +15,11 @@ from utils.util import RandHorizontalFlip, Normalize, ToTensor, RandShuffle
 config = Config({
     # device
     'gpu_id': "0",                          # specify GPU number to use
-    'num_workers': 8,
+    'num_workers': 1,
 
     # data
     'db_name': 'KonIQ-10k',                                     # database type
-    'db_path': '/mnt/Dataset/anse_data/IQAdata/koniq-10k',      # root path of database
+    'db_path': '/home/tianlan.lht/code/MUSIQ/dataset',      # root path of database
     'txt_file_name': './IQA_list/koniq-10k.txt',                # list of images in the database
     'train_size': 0.8,                                          # train/vaildation separation ratio
     'scenes': 'all',                                            # using all scenes
@@ -40,11 +40,11 @@ config = Config({
     'dropout': 0.1,                         # dropout ratio
     'emb_dropout': 0.1,                     # dropout ratio of input embedding
     'layer_norm_epsilon': 1e-12,
-    'n_output': 1,                          # dimension of output
+    'n_output': 4,                          # dimension of output
     'Grid': 10,                             # grid of 2D spatial embedding
 
     # optimization & training parameters
-    'n_epoch': 100,                         # total training epochs
+    'n_epoch': 1,                         # total training epochs
     'learning_rate': 1e-4,                  # initial learning rate
     'weight_decay': 0,                      # L2 regularization weight
     'momentum': 0.9,                        # SGD momentum
@@ -101,14 +101,14 @@ test_dataset = IQADataset(
 train_loader = DataLoader(dataset=train_dataset, batch_size=config.batch_size, num_workers=config.num_workers, drop_last=True, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=config.batch_size, num_workers=config.num_workers, drop_last=True, shuffle=True)
 
-
+print("start model")
 # create model
 model_backbone = resnet50_backbone().to(config.device)
 model_transformer = IQARegression(config).to(config.device)
 
 
 # loss function & optimization
-criterion = torch.nn.L1Loss()
+criterion = torch.nn.CrossEntropyLoss().to(config.device)
 params = list(model_backbone.parameters()) + list(model_transformer.parameters())
 optimizer = torch.optim.SGD(params, lr=config.learning_rate, weight_decay=config.weight_decay, momentum=config.momentum)
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.T_max, eta_min=config.eta_min)
