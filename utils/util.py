@@ -84,7 +84,7 @@ def RandShuffle(config):
         elif config.db_name == 'LIVEc':
             scenes = list(range(1162))
         elif config.db_name == 'KonIQ-10k':
-            scenes = list(range(10073))
+            scenes = list(range(100))
     else:
         scenes = config.scenes
         

@@ -15,8 +15,8 @@ from model.model_main import IQARegression
 # configuration
 config = Config({
     'gpu_id': 0,                                                        # specify gpu number to use
-    'dirname': '/mnt/Dataset/anse_data/IQAdata/koniq-10k/1024x768',     # directory of data root
-    'checkpoint': './weights/epoch40.pth',                              # weights of trained model
+    'dirname': '/home/tianlan.lht/code/MUSIQ/dataset/2data/',     # directory of data root
+    'checkpoint': './weights/epoch1.pth',                              # weights of trained model
     'result_score_txt': 'test_score.txt',                               # file for saving inference results
     'batch_size': 1,                                                    # fix the value as 1 (for inference)
 
@@ -32,7 +32,7 @@ config = Config({
     'dropout': 0.1,                         # dropout ratio
     'emb_dropout': 0.1,                     # dropout ratio of input embedding
     'layer_norm_epsilon': 1e-12,
-    'n_output': 1,                          # dimension of output
+    'n_output': 5,                          # dimension of output
     'Grid': 10,                             # grid of 2D spatial embedding
     'scale_1': 384,                         # multi-scale                                             
     'scale_2': 224,                         # multi-scale
@@ -118,10 +118,10 @@ for filename in tqdm(filenames):
 
         # quality prediction
         pred = model_transformer(mask_inputs, feat_dis_org, feat_dis_scale_1, feat_dis_scale_2)
-        pred_total = np.append(pred_total, float(pred.item()))
+        pred_total = np.append(pred_total, torch.argmax(pred).item())
 
         # result save
-        line = '%s\t%f\n' % (filename, float(pred.item()))
+        line = '%s\t%f\n' % (filename, torch.argmax(pred).item())
         f.write(line)
 f.close()
         

@@ -47,7 +47,7 @@ def train_epoch(config, epoch, model_transformer, model_backbone, criterion, opt
         optimizer.zero_grad()
 
         pred = model_transformer(mask_inputs, feat_dis_org, feat_dis_scale_1, feat_dis_scale_2)
-        loss = criterion(torch.squeeze(pred), labels)
+        loss = criterion(torch.squeeze(pred), labels.long())
         loss_val = loss.item()
         losses.append(loss_val)
 
@@ -63,10 +63,10 @@ def train_epoch(config, epoch, model_transformer, model_backbone, criterion, opt
     
     
     # compute correlation coefficient
-    rho_s, _ = spearmanr(np.squeeze(pred_epoch), np.squeeze(labels_epoch))
-    rho_p, _ = pearsonr(np.squeeze(pred_epoch), np.squeeze(labels_epoch))
+    # rho_s, _ = spearmanr(np.squeeze(pred_epoch), np.squeeze(labels_epoch))
+    # rho_p, _ = pearsonr(np.squeeze(pred_epoch), np.squeeze(labels_epoch))
 
-    print('[train] epoch:%d / loss:%f / SROCC:%4f / PLCC:%4f' % (epoch+1, loss.item(), rho_s, rho_p))
+    # print('[train] epoch:%d / loss:%f / SROCC:%4f / PLCC:%4f' % (epoch+1, loss.item(), rho_s, rho_p))
 
     # save weights
     if (epoch+1) % config.save_freq == 0:
@@ -82,7 +82,7 @@ def train_epoch(config, epoch, model_transformer, model_backbone, criterion, opt
         }, weights_file)
         print('save weights of epoch %d' % (epoch+1))
 
-    return np.mean(losses), rho_s, rho_p
+    return np.mean(losses)
 
 
 """ validation """
